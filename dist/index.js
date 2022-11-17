@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.resetPinCodeInternalStates = void 0;
 const ApplicationLocked_1 = require("./src/ApplicationLocked");
 const PinCode_1 = require("./src/PinCode");
 const PinCodeChoose_1 = require("./src/PinCodeChoose");
@@ -62,7 +63,7 @@ PINCode.defaultProps = {
 //   return deletePinCode(serviceName || pinCodeKeychainNameDefault);
 // }
 function resetPinCodeInternalStates(pinAttempsStorageName, timePinLockedStorageName) {
-    return utils_1.resetInternalStates([
+    return (0, utils_1.resetInternalStates)([
         pinAttempsStorageName || pinAttemptsAsyncStorageNameDefault,
         timePinLockedStorageName || timePinLockedAsyncStorageNameDefault
     ]);

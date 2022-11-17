@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import * as React from "react";
 import { StyleProp, TextStyle, ViewStyle } from "react-native";
 /**
@@ -80,7 +79,7 @@ export interface IState {
 export declare enum PinStatus {
     choose = "choose",
     confirm = "confirm",
-    enter = "enter",
+    enter = "enter"
 }
 declare class PinCode extends React.PureComponent<IProps, IState> {
     static defaultProps: Partial<IProps>;
