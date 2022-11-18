@@ -34,7 +34,6 @@ export declare type IProps = {
     pinStatus?: PinResultStatus;
     status: "choose" | "enter" | "locked";
     storedPin?: string;
-    storePin?: any;
     styleMainContainer?: StyleProp<ViewStyle>;
     stylePinCodeChooseContainer?: StyleProp<ViewStyle>;
     stylePinCodeEnterContainer?: StyleProp<ViewStyle>;

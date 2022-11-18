@@ -1,6 +1,6 @@
-import { PinStatus } from './PinCode';
-import * as React from 'react';
-import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { PinStatus } from "./PinCode";
+import * as React from "react";
+import { StyleProp, TextStyle, ViewStyle } from "react-native";
 /**
  * Pin Code Choose PIN Page
  */
@@ -22,7 +22,6 @@ export interface IProps {
     passwordLength?: number;
     pinCodeKeychainName: string;
     pinCodeVisible?: boolean;
-    storePin: any;
     styleButtonCircle?: StyleProp<ViewStyle>;
     styleCircleHiddenPassword?: StyleProp<ViewStyle>;
     styleCircleSizeEmpty?: number;

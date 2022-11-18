@@ -1,10 +1,7 @@
-import { PinStatus } from './PinCode';
-import { PinResultStatus } from './utils';
-import * as React from 'react';
-import { StyleProp, TextStyle, ViewStyle } from 'react-native';
-/**
- * Pin Code Enter PIN Page
- */
+import { PinStatus } from "./PinCode";
+import { PinResultStatus } from "./utils";
+import * as React from "react";
+import { StyleProp, TextStyle, ViewStyle } from "react-native";
 export interface IProps {
     buttonDeleteComponent: any;
     buttonDeleteText?: string;
@@ -21,11 +18,11 @@ export interface IProps {
     endProcessFunction?: (pinCode: string) => void;
     finishProcess?: (pinCode: string) => void;
     getCurrentLength?: (length: number) => void;
-    handleResult: any;
+    handleResult: (pinCode: string) => void;
     iconButtonDeleteDisabled?: boolean;
     maxAttempts: number;
     numbersButtonOverlayColor?: string;
-    onFail?: any;
+    onFail?: (attempts: number) => void;
     passwordComponent: any;
     passwordLength?: number;
     pinAttemptsAsyncStorageName: string;
@@ -77,6 +74,7 @@ export interface IProps {
     passcodeFallback?: boolean;
     vibrationEnabled?: boolean;
     delayBetweenAttempts?: number;
+    fallbackLabel?: string;
 }
 export interface IState {
     pinCodeStatus: PinResultStatus;
@@ -90,7 +88,7 @@ declare class PinCodeEnter extends React.PureComponent<IProps, IState> {
     };
     constructor(props: IProps);
     componentDidMount(): void;
-    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, prevContext: any): void;
+    componentDidUpdate(prevProps: Readonly<IProps>): void;
     triggerTouchID(): void;
     endProcess: (pinCode?: string) => Promise<void>;
     launchTouchID(): Promise<void>;
