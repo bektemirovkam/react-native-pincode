@@ -204,8 +204,8 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
       await LocalAuthentication.authenticateAsync({
         promptMessage: this.props.touchIDSentence,
         cancelLabel: this.props.textCancelButtonTouchID || "Cancel",
-        fallbackLabel: this.props.fallbackLabel || "Show Passcode",
-        disableDeviceFallback: true,
+        // fallbackLabel: this.props.fallbackLabel || "Show Passcode",
+        // disableDeviceFallback: true,
       }).then((response: any) => {
         console.log("launchTouchID response", response);
         if (!response.error) {
