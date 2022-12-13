@@ -7,6 +7,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.noBiometricsConfig = exports.resetInternalStates = exports.PinResultStatus = void 0;
 const react_native_1 = require("react-native");
 // import AsyncStorage from '@react-native-community/async-storage'
 // import * as Keychain from 'react-native-keychain'
@@ -26,7 +27,7 @@ var PinResultStatus;
 // export const deletePinCode = async (serviceName: string) => {
 //   return await Keychain.resetInternetCredentials(serviceName)
 // }
-exports.resetInternalStates = async (asyncStorageKeys) => {
+const resetInternalStates = async (asyncStorageKeys) => {
     var e_1, _a;
     try {
         // return await AsyncStorage.multiRemove(asyncStorageKeys)
@@ -43,6 +44,7 @@ exports.resetInternalStates = async (asyncStorageKeys) => {
         finally { if (e_1) throw e_1.error; }
     }
 };
+exports.resetInternalStates = resetInternalStates;
 exports.noBiometricsConfig = react_native_1.Platform.select({
     android: {
         // accessControl: Keychain.ACCESS_CONTROL.APPLICATION_PASSWORD,
