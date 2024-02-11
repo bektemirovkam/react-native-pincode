@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "d3-ease": "^1.0.3",
-    "expo-secure-store": "~11.3.0",
-    "expo-local-authentication": "~12.3.0",
+    "expo-secure-store": "~12.8.1",
+    "expo-local-authentication": "~13.8.0",
     "lodash": "^4.17.5",
     "react-move": "^2.7.0",
     "react-native-easy-grid": "^0.2.2",

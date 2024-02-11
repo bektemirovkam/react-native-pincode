@@ -56,7 +56,7 @@ class PinCodeEnter extends React.PureComponent {
                         this.props.changeInternalStatus(utils_1.PinResultStatus.failure);
                     }
                     if (this.props.onFail) {
-                        await (0, delay_1.default)(1500);
+                        await delay_1.default(1500);
                         this.props.onFail(pinAttempts);
                     }
                 }
@@ -96,8 +96,6 @@ class PinCodeEnter extends React.PureComponent {
             await LocalAuthentication.authenticateAsync({
                 promptMessage: this.props.touchIDSentence,
                 cancelLabel: this.props.textCancelButtonTouchID || "Cancel",
-                // fallbackLabel: this.props.fallbackLabel || "Show Passcode",
-                // disableDeviceFallback: true,
             }).then((response) => {
                 console.log("launchTouchID response", response);
                 if (!response.error) {
