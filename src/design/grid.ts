@@ -13,5 +13,5 @@ const grid = {
   lowOpacity: 0.4,
   mediumOpacity: 0.6,
   highOpacity: 0.8
-}
-export { grid }
+};
+export { grid };

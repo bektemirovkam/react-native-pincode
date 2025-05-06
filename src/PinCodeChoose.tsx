@@ -1,9 +1,7 @@
 import PinCode, { PinStatus } from './PinCode'
-import { noBiometricsConfig } from './utils'
 
 import * as React from 'react'
 import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native'
-// import * as Keychain from 'react-native-keychain'
 
 /**
  * Pin Code Choose PIN Page
@@ -27,7 +25,6 @@ export interface IProps {
   passwordLength?: number
   pinCodeKeychainName: string
   pinCodeVisible?: boolean
-  storePin: any
   styleButtonCircle?: StyleProp<ViewStyle>
   styleCircleHiddenPassword?: StyleProp<ViewStyle>
   styleCircleSizeEmpty?: number
@@ -80,6 +77,7 @@ class PinCodeChoose extends React.PureComponent<IProps, IState> {
   static defaultProps: Partial<IProps> = {
     styleContainer: null
   }
+
   constructor(props: IProps) {
     super(props)
     this.state = { status: PinStatus.choose, pinCode: '' }
@@ -96,17 +94,7 @@ class PinCodeChoose extends React.PureComponent<IProps, IState> {
 
   endProcessConfirm = async (pinCode: string) => {
     if (pinCode === this.state.pinCode) {
-      // if (this.props.storePin) {
-        this.props.storePin(pinCode)
-      // } else {
-      //   await Keychain.setInternetCredentials(
-      //     this.props.pinCodeKeychainName,
-      //     this.props.pinCodeKeychainName,
-      //     pinCode,
-      //     noBiometricsConfig
-      //   )
-      // }
-      if (!!this.props.finishProcess) this.props.finishProcess(pinCode)
+      if (this.props.finishProcess) this.props.finishProcess(pinCode)
     } else {
       this.setState({ status: PinStatus.choose })
     }
@@ -118,11 +106,7 @@ class PinCodeChoose extends React.PureComponent<IProps, IState> {
 
   render() {
     return (
-      <View
-        style={[
-          styles.container,
-          this.props.styleContainer
-        ]}>
+      <View style={[styles.container, this.props.styleContainer]}>
         {this.state.status === PinStatus.choose && (
           <PinCode
             buttonDeleteComponent={this.props.buttonDeleteComponent || null}
@@ -265,12 +249,11 @@ class PinCodeChoose extends React.PureComponent<IProps, IState> {
   }
 }
 
-
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'center'
   }
 })
 

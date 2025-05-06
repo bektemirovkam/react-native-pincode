@@ -1,24 +1,12 @@
 import delay from './delay'
 import PinCode, { PinStatus } from './PinCode'
-import { PinResultStatus, noBiometricsConfig } from './utils'
+import { PinResultStatus } from './utils'
 
-// import AsyncStorage from '@react-native-community/async-storage'
 import * as React from 'react'
-import {
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle
-} from 'react-native'
-// import * as Keychain from 'react-native-keychain'
-// import TouchID from 'react-native-touch-id'
+import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native'
+
 import * as SecureStore from 'expo-secure-store'
 import * as LocalAuthentication from 'expo-local-authentication'
-
-/**
- * Pin Code Enter PIN Page
- */
 
 export interface IProps {
   buttonDeleteComponent: any
@@ -36,11 +24,11 @@ export interface IProps {
   endProcessFunction?: (pinCode: string) => void
   finishProcess?: (pinCode: string) => void
   getCurrentLength?: (length: number) => void
-  handleResult: any
+  handleResult: (pinCode: string) => void
   iconButtonDeleteDisabled?: boolean
   maxAttempts: number
   numbersButtonOverlayColor?: string
-  onFail?: any
+  onFail?: (attempts: number) => void
   passwordComponent: any
   passwordLength?: number
   pinAttemptsAsyncStorageName: string
@@ -92,6 +80,7 @@ export interface IProps {
   passcodeFallback?: boolean
   vibrationEnabled?: boolean
   delayBetweenAttempts?: number
+  fallbackLabel?: string
 }
 
 export interface IState {
@@ -112,27 +101,13 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
     this.state = { pinCodeStatus: PinResultStatus.initial, locked: false }
     this.endProcess = this.endProcess.bind(this)
     this.launchTouchID = this.launchTouchID.bind(this)
-    // if (!this.props.storedPin) {
-    //   Keychain.getInternetCredentials(
-    //     this.props.pinCodeKeychainName,
-    //     noBiometricsConfig
-    //   ).then(result => {
-    //     this.keyChainResult = result && result.password || undefined
-    //   }).catch(error => {
-    //     console.log('PinCodeEnter: ', error)
-    //   })
-    // }
   }
 
   componentDidMount() {
     if (!this.props.touchIDDisabled) this.triggerTouchID()
   }
 
-  componentDidUpdate(
-    prevProps: Readonly<IProps>,
-    prevState: Readonly<IState>,
-    prevContext: any
-  ): void {
+  componentDidUpdate(prevProps: Readonly<IProps>): void {
     if (prevProps.pinStatusExternal !== this.props.pinStatusExternal) {
       this.setState({ pinCodeStatus: this.props.pinStatusExternal })
     }
@@ -142,10 +117,9 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
   }
 
   triggerTouchID() {
-    // !!TouchID && TouchID.isSupported()
     LocalAuthentication.hasHardwareAsync()
-      .then((hasHardware) => {
-        if(hasHardware) {
+      .then(hasHardware => {
+        if (hasHardware) {
           setTimeout(() => {
             this.launchTouchID()
           })
@@ -157,15 +131,14 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
   }
 
   endProcess = async (pinCode?: string) => {
-    if (!!this.props.endProcessFunction) {
+    if (this.props.endProcessFunction) {
       this.props.endProcessFunction(pinCode as string)
     } else {
       if (this.props.handleResult) {
-        this.props.handleResult(pinCode)
+        this.props.handleResult(pinCode as string)
       }
       this.setState({ pinCodeStatus: PinResultStatus.initial })
       this.props.changeInternalStatus(PinResultStatus.initial)
-      // const pinAttemptsStr = await AsyncStorage.getItem(
       const pinAttemptsStr = await SecureStore.getItemAsync(
         this.props.pinAttemptsAsyncStorageName
       )
@@ -173,14 +146,14 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
       const pin = this.props.storedPin || this.keyChainResult
       if (pin === pinCode) {
         this.setState({ pinCodeStatus: PinResultStatus.success })
-        await SecureStore.deleteItemAsync(this.props.pinAttemptsAsyncStorageName);
-        await SecureStore.deleteItemAsync(this.props.timePinLockedAsyncStorageName);
-        // AsyncStorage.multiRemove([
-        //   this.props.pinAttemptsAsyncStorageName,
-        //   this.props.timePinLockedAsyncStorageName
-        // ])
+        await SecureStore.deleteItemAsync(
+          this.props.pinAttemptsAsyncStorageName
+        )
+        await SecureStore.deleteItemAsync(
+          this.props.timePinLockedAsyncStorageName
+        )
         this.props.changeInternalStatus(PinResultStatus.success)
-        if (!!this.props.finishProcess)
+        if (this.props.finishProcess)
           this.props.finishProcess(pinCode as string)
       } else {
         pinAttempts++
@@ -188,15 +161,16 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
           +pinAttempts >= this.props.maxAttempts &&
           !this.props.disableLockScreen
         ) {
-          // await AsyncStorage.setItem(
           await SecureStore.setItemAsync(
             this.props.timePinLockedAsyncStorageName,
             new Date().toISOString()
           )
-          this.setState({ locked: true, pinCodeStatus: PinResultStatus.locked })
+          this.setState({
+            locked: true,
+            pinCodeStatus: PinResultStatus.locked
+          })
           this.props.changeInternalStatus(PinResultStatus.locked)
         } else {
-          // await AsyncStorage.setItem(
           await SecureStore.setItemAsync(
             this.props.pinAttemptsAsyncStorageName,
             pinAttempts.toString()
@@ -213,41 +187,21 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
   }
 
   async launchTouchID() {
-    // const optionalConfigObject = {
-    //   imageColor: '#e00606',
-    //   imageErrorColor: '#ff0000',
-    //   sensorDescription: 'Touch sensor',
-    //   sensorErrorDescription: 'Failed',
-    //   cancelText: this.props.textCancelButtonTouchID || 'Cancel',
-    //   fallbackLabel: 'Show Passcode',
-    //   unifiedErrors: false,
-    //   passcodeFallback: this.props.passcodeFallback
-    // }
     try {
-      // await TouchID.authenticate(
-      //   this.props.touchIDSentence,
-      //   Object.assign({}, optionalConfigObject, {
-      //     title: this.props.touchIDTitle
-      //   })
-      // ).then((success: any) => {
-      //   this.endProcess(this.props.storedPin || this.keyChainResult)
-      // })
       await LocalAuthentication.authenticateAsync({
         promptMessage: this.props.touchIDSentence,
-        cancelLabel: this.props.textCancelButtonTouchID || 'Cancel',
-        fallbackLabel: 'Show Passcode',
-        disableDeviceFallback: true,
+        cancelLabel: this.props.textCancelButtonTouchID || 'Cancel'
       }).then((response: any) => {
-        console.log("launchTouchID response", response)
-        if(!response.error) {
+        console.log('launchTouchID response', response)
+        if (!response.error) {
           this.endProcess(this.props.storedPin || this.keyChainResult)
         } else {
           throw response.error
         }
       })
     } catch (e) {
-      if (!!this.props.callbackErrorTouchId) {
-        this.props.callbackErrorTouchId(e)
+      if (this.props.callbackErrorTouchId) {
+        this.props.callbackErrorTouchId(e as Error)
       } else {
         console.log('TouchID error', e)
       }
@@ -255,14 +209,9 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const pin =
-      this.props.storedPin || this.keyChainResult
+    const pin = this.props.storedPin || this.keyChainResult
     return (
-      <View
-        style={[
-          styles.container,
-          this.props.styleContainer
-        ]}>
+      <View style={[styles.container, this.props.styleContainer]}>
         <PinCode
           buttonDeleteComponent={this.props.buttonDeleteComponent || null}
           buttonDeleteText={this.props.buttonDeleteText}
@@ -340,9 +289,9 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'center'
   }
 })
 
